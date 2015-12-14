@@ -10,8 +10,8 @@ Here's how it works:
 *  It will create that folder preceeded by the current date. 
 *  Then it creates directories within that folder.
 *  Proj-Bot will ask if you want to copy in email templates. If so, which brand/abbreviation. It will copy them into a specific folder.
-*  A third prompt will ask if you'd like Photoshop assets imported as well.
-*  Last but certainly not least, it will ask if you'd like to setup anotoher project.
+*  Yet another prompt will ask if you'd like Photoshop assets imported as well.
+*  Last but certainly not least, it will ask if you'd like to setup another project.
 
 A very handy script for when a ton of production work comes your way.
 
