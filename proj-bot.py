@@ -13,7 +13,7 @@ import time
 import os, sys
 import urllib
 
-# SETUP VARIABLES
+# NULL > STRING
 def initProj():
     projStorage =  "/Users/sdavis/Documents/_jira-tasks/"
     projFolderName = raw_input('\nProject Name: ')
@@ -73,6 +73,7 @@ def addEmailAssets(emailDestination):
 
     # DOWNLOAD SHELL
     genericDownloader(gitEmailShellPath, projEmailShellDestination)
+    
     # DOWNLOAD IMAGES
     svnDownloader(gitEmailImagesPath, projTemplateImageDestination)
     
@@ -80,25 +81,27 @@ def addEmailAssets(emailDestination):
     intermediateProjFolderName = os.path.dirname(projWorkingFolderPath)
     targetFileName = projWorkingFolderPath + siteAbbrev + "-email-template-shell.html"
     renameEmailToProjName = intermediateProjFolderName.split("/")[-2] + ".html"
-
+    
+    # CALL RENAME FUNCTION
     renameFile(targetFileName, projWorkingFolderPath + renameEmailToProjName)
-
     print ("Renamed Email:"), renameEmailToProjName
     
     # COPY SNIPPETS TO RESOURCES?
     addSnippets = raw_input('Snippets? y/n: ').lower()
 
     if addSnippets == "y":
+        # SNIPPET VARIABLES
         fileToDownload = "https://github.com/livingdirectcreative/2015-responsive-email-templates/trunk/_working/_snippets"
         parsedFileName = fileToDownload.split("/")[-1]
         fileDestination = projResourcesFolderPath + parsedFileName
+        
+        # DOWNLOAD SNIPPETS VIA SVN
         svnDownloader(fileToDownload, fileDestination)
-    elif addSnippets != "n":
-        "'y' or 'n'. Try again..."
 
     # COPY PSDS TO RESOURCES?
     addEmailPsdTemplate = raw_input('Banner PSD? y/n: ').lower()
 
+    # PSDS TO DOWNLOAD
     emailBannerCollection = [
                              "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-template.psd",
                              "https://github.com/livingdirectcreative/psd-templates/raw/master/email/skinny-banner-template.psd"
@@ -106,19 +109,20 @@ def addEmailAssets(emailDestination):
 
     if addEmailPsdTemplate == "y":
         for emailPsdUrl in emailBannerCollection:
+            # DOWNLOAD PSDS USING THE GENERIC DOWNLOADER
             genericDownloader(emailPsdUrl, projResourcesFolderPath)
-    elif addEmailPsdTemplate != "n":
-        "Hey wise guy. Try again..."
 
-# NULL
+# NULL > NULL
 def generateProj():
-
+    
+    # INITIALIZE PROJECT 
     projPath = initProj()
     print "PROJECT PATH: ", projPath
 
     # FOLDER LIST
     projFolderList = ['_resources','_working','deliverables']
 
+    # CREATE PROJECT FOLDER
     print "Your folder has been created at: " + projPath
     os.mkdir( projPath );
 
@@ -131,13 +135,16 @@ def generateProj():
     # ADD EMAIL TEMPLATES
     addEmailTemplate = raw_input('Add email templates? y/n: ').lower()
     if addEmailTemplate == "y":
+        # ADD EMAIL ASSETS
         addEmailAssets(projPath)
 
     # ADD ANOTHER PROJECT?
     addAnotherProj = raw_input('Add another project? y/n: ').lower()
     while addAnotherProj == "y":
         print "------"
+        # CREATE NEW PROJECT
         generateProj()
+        # RESET TO CONTINUE LOOP
         addAnotherProj = ""
 
 generateProj()
