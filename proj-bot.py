@@ -23,20 +23,20 @@ def initProj():
     return projPath
 
 # STRING, STRING > NULL
-def genericDownloader(urlToDownload, localLocation):
+def genericDownloader(urlToDownload, projLocation):
     print ("-"*40)
     fileName = urlToDownload.split("/")[-1]
     print ("Downloading \"" + fileName + "\"...")
-    urllib.urlretrieve(urlToDownload, localLocation + fileName)
+    urllib.urlretrieve(urlToDownload, projLocation + fileName)
     print ("Successfully Downloaded: " + fileName)
     print ("-"*40)
 
 # STRING, STRING > NULL
-def svnDownloader(urlToDownload, localLocation):
+def svnDownloader(urlToDownload, projLocation):
     fileName = urlToDownload.split("/")[-1]
     print ("-"*40)
     print ("SVN Downloading \"" + fileName + "\"...")
-    os.system("svn export " + urlToDownload + " " + localLocation)
+    os.system("svn export " + urlToDownload + " " + projLocation)
     print ("SVN Successfully Downloaded: " + fileName)
     print ("-"*40)
 
