@@ -1,152 +1,145 @@
 #!/usr/bin/env python
 
 '''
-########
+##############
 
-PROJ-BOT
+PROJ-BOT 1.0.1
 
-########
+##############
 '''
 
+from easygui import *
+import os
 import shutil
+import sys
 import time
-import os, sys
 import urllib
 
-# NULL > STRING
+# LIST VARIABLES =========================================
+
+# Individual Files
+psdUrlList = [
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-template.psd",
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-content.psd",
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-sale.psd",
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/skinny-banner-template.psd"
+            ]
+
+# Directories
+assetsUrlList = []
+
+# CREATE PROJECT =========================================
+
+# Null > String
 def initProj():
+    # Project hub
     projStorage =  "/Users/sdavis/Documents/_jira-tasks/"
-    projFolderName = raw_input('\nProject Name: ')
+    
+    # Easygui text box
+    dateString = time.strftime("%Y%m%d-")
+    projFolderName = enterbox("Enter Name of Project", "Proj-Bot: Name Your Project", dateString)
+    print ("PROJECT NAME: " + projFolderName)
 
-    # PATH LOCATION & FOLDER CREATION
-    projPath = projStorage + (time.strftime("%Y%m%d-")) + projFolderName
-    return projPath
+    # Path location & folder creation
+    fullProjPath = projStorage + projFolderName
 
-# STRING, STRING > NULL
-def genericDownloader(urlToDownload, localLocation):
-    print ("-"*40)
-    fileName = urlToDownload.split("/")[-1]
+    return fullProjPath
+
+# CREATE DIRECTORIES =====================================
+
+# Null > Null
+def createDirectories(dirPath):
+    # Folder list
+    projFolderList = ['_resources','_working','deliverables']
+
+    # Create project folder
+    print "Your folder has been created at: " + dirPath
+    os.mkdir( dirPath );
+
+    # Loop through folder list
+    for projFolder in projFolderList:
+       os.mkdir( dirPath + "/" + projFolder );
+       print 'Folder Added: ' + projFolder
+    print ("-" * 40)
+
+# DOWNLOAD FILES =========================================
+
+# String, String > Null
+def genericDownloader(src, dst):
+    fileName = src.split("/")[-1]
     print ("Downloading \"" + fileName + "\"...")
-    urllib.urlretrieve(urlToDownload, localLocation + fileName)
+    urllib.urlretrieve(src, dst + fileName)
     print ("Successfully Downloaded: " + fileName)
-    print ("-"*40)
+    print ("-" * 40)
 
-# STRING, STRING > NULL
-def svnDownloader(urlToDownload, localLocation):
-    fileName = urlToDownload.split("/")[-1]
-    print ("-"*40)
+# String, String > Null
+def svnDownloader(src, dst):
+    fileName = src.split("/")[-1]
     print ("SVN Downloading \"" + fileName + "\"...")
-    os.system("svn export " + urlToDownload + " " + localLocation)
+    os.system("SVN export " + src + " " + dst)
     print ("SVN Successfully Downloaded: " + fileName)
-    print ("-"*40)
+    print ("-" * 40)
 
-# STRING > STRING
-def renameFile(oldName, newName):
-    os.rename(oldName, newName)
+def downloadFiles(dList, dst):
+    # Easygui multichoice box
+    dialogTitle = "Proj Bot: File Picker"
+    dialogMsg = "Choose one or multiple files. Go for it!"
 
-# STRING > RETURN NULL
-def addEmailAssets(emailDestination):
+    # List of modified/pretty file names
+    displayChoices = []
 
-    siteAbbrev = raw_input('Site Abbreviation? ').lower()   
-    emailDestinationString = str(emailDestination)
+    # Int used to number files
+    itemNum = 1
 
-    # PROJECT
-    projWorkingFolderPath = emailDestinationString + "/_working/"
-    projResourcesFolderPath = emailDestinationString + "/_resources/"
+    # Loop through URLs in download list
+    for url in dList:
+        # Make it pretty
+        displayChoices.append(url.split("/")[-1])
+        itemNum += 1
 
-    # ACCESS URLLIB OPENER
-    theOpener = urllib.URLopener()
+    # List of selected files
+    selectedFiles = multchoicebox(dialogMsg, dialogTitle, displayChoices)
+    print ("Selected Files: " + str(selectedFiles))
 
-    # VARIABLES FOR GITHUB
-    gitEmailParentDirectory = "https://github.com/livingdirectcreative/2015-responsive-email-templates/trunk/_working/" + siteAbbrev + "-email-template"
-    gitEmailImagesPath = gitEmailParentDirectory + "/images"
-    gitEmailShellPath = "https://raw.githubusercontent.com/livingdirectcreative/2015-responsive-email-templates/master/_working/" + siteAbbrev + "-email-template/" + siteAbbrev + "-email-template-shell.html"
-    
-    # PROJECT VARIABLES
-    projDirName = gitEmailParentDirectory.split("/")[-1]
-    projImageDirName = gitEmailImagesPath.split("/")[-1]
+    # Loop through list of selected files 
+    # Download'em using the genericDownloader function
+    for sFile in selectedFiles:
+        sIndex = displayChoices.index(sFile)
+        genericDownloader(dList[sIndex], dst)
 
-    # DESTINATION VARIABLES 
-    projTemplateDestination = projWorkingFolderPath + "/" + projDirName
-    projTemplateImageDestination = projWorkingFolderPath + "/" + projImageDirName
-    projEmailShellDestination = projWorkingFolderPath
+# RENAMER =========================================
 
-    # DOWNLOAD SHELL
-    genericDownloader(gitEmailShellPath, projEmailShellDestination)
-    
-    # DOWNLOAD IMAGES
-    svnDownloader(gitEmailImagesPath, projTemplateImageDestination)
-    
-    # RENAME FILE VARIABLES
-    intermediateProjFolderName = os.path.dirname(projWorkingFolderPath)
-    targetFileName = projWorkingFolderPath + siteAbbrev + "-email-template-shell.html"
-    renameEmailToProjName = intermediateProjFolderName.split("/")[-2] + ".html"
-    
-    # CALL RENAME FUNCTION
-    renameFile(targetFileName, projWorkingFolderPath + renameEmailToProjName)
-    print ("Renamed Email:"), renameEmailToProjName
-    
-    # COPY SNIPPETS TO RESOURCES?
-    addSnippets = raw_input('Snippets? y/n: ').lower()
+# String, String > String
+def renameFile(oName, nName):
+    os.rename(oName, nName)
 
-    if addSnippets == "y":
-        # SNIPPET VARIABLES
-        fileToDownload = "https://github.com/livingdirectcreative/2015-responsive-email-templates/trunk/_working/_snippets"
-        parsedFileName = fileToDownload.split("/")[-1]
-        fileDestination = projResourcesFolderPath + parsedFileName
-        
-        # DOWNLOAD SNIPPETS VIA SVN
-        svnDownloader(fileToDownload, fileDestination)
+# GENERATE PROJECT =========================================
 
-    # COPY PSDS TO RESOURCES?
-    addEmailPsdTemplate = raw_input('Banner PSD? y/n: ').lower()
-
-    # PSDS TO DOWNLOAD
-    emailBannerCollection = [
-                             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-template.psd",
-                             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/skinny-banner-template.psd"
-                            ]
-
-    if addEmailPsdTemplate == "y":
-        for emailPsdUrl in emailBannerCollection:
-            # DOWNLOAD PSDS USING THE GENERIC DOWNLOADER
-            genericDownloader(emailPsdUrl, projResourcesFolderPath)
-
-# NULL > NULL
+# Null > Null
 def generateProj():
-    
-    # INITIALIZE PROJECT 
+    # Initialize project 
     projPath = initProj()
     print "PROJECT PATH: ", projPath
 
-    # FOLDER LIST
-    projFolderList = ['_resources','_working','deliverables']
+    # Create list of directories
+    createDirectories(projPath)
 
-    # CREATE PROJECT FOLDER
-    print "Your folder has been created at: " + projPath
-    os.mkdir( projPath );
+    # Download files
+    resourcePath = projPath + "/_resources/"
 
-    for projFolder in projFolderList:
-       os.mkdir( projPath + "/" + projFolder );
-       print 'Folder Added: ' + projFolder
+    # Pass in list of selected files to download
+    # Add to desired location
+    downloadFiles(psdUrlList, resourcePath)
 
-    print "------"
-    
-    # ADD EMAIL TEMPLATES
-    addEmailTemplate = raw_input('Add email templates? y/n: ').lower()
-    if addEmailTemplate == "y":
-        # ADD EMAIL ASSETS
-        addEmailAssets(projPath)
-
-    # ADD ANOTHER PROJECT?
-    addAnotherProj = raw_input('Add another project? y/n: ').lower()
-    while addAnotherProj == "y":
-        print "------"
-        # CREATE NEW PROJECT
+    # Returns True or False
+    addAnotherProj = ynbox("Add another project?", "Proj Bot: Another Project")
+    while addAnotherProj == True:
+        print ("==== ### ADDING NEW PROJECT ### ====")
+        # Run generateProj function again
         generateProj()
-        # RESET TO CONTINUE LOOP
+        # Reset addAnotherProj
         addAnotherProj = ""
 
 generateProj()
 
-print "\n>>>>>>>>>>>>>>>>>>>>>>>>>>\n<<<<<<<<<<<<<<<<<<<<<<<<<<\n\nPROJECT CREATION COMPLETE!\n\n<<<<<<<<<<<<<<<<<<<<<<<<<<\n>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+print ("<<< DONE! >>>")
