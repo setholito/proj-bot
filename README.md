@@ -20,4 +20,8 @@ A very handy script for when a ton of production work comes your way.
 
 Integrated the [EasyGUI](http://easygui.readthedocs.org/en/latest/index.html) module for an even easier experience.
 
+![Proj-Bot Step 1](/images/proj-bot-step-1.jpg "Proj-Bot Step 1")
+![Proj-Bot Step 2](/images/proj-bot-step-2.jpg "Proj-Bot Step 2")
+![Proj-Bot Step 3](/images/proj-bot-step-3.jpg "Proj-Bot Step 3")
+
 Feel free to fork and send pull requests. Thanks!
