@@ -17,7 +17,7 @@ import urllib
 
 # LIST VARIABLES =========================================
 
-# Individual Files
+# Individual files for download
 psdUrlList = [
             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-template.psd",
             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-content.psd",
@@ -25,7 +25,7 @@ psdUrlList = [
             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/skinny-banner-template.psd"
             ]
 
-# Directories
+# Directory URL for download
 assetsUrlList = []
 
 # CREATE PROJECT =========================================
