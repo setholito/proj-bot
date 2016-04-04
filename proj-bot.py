@@ -64,39 +64,17 @@ def createDirectories(dirPath):
 
 # DOWNLOAD FILES =========================================
 
-<<<<<<< HEAD
 # String, String > Null
 def genericDownloader(src, dst):
     fileName = src.split("/")[-1]
     print ("Downloading \"" + fileName + "\"...")
     urllib.urlretrieve(src, dst + fileName)
-=======
-# STRING, STRING > NULL
-def genericDownloader(urlToDownload, projLocation):
-    print ("-"*40)
-    fileName = urlToDownload.split("/")[-1]
-    print ("Downloading \"" + fileName + "\"...")
-    urllib.urlretrieve(urlToDownload, projLocation + fileName)
->>>>>>> 162e70a997335a384851c8b113c8d2c79ad2e887
-    print ("Successfully Downloaded: " + fileName)
-    print ("-" * 40)
 
-<<<<<<< HEAD
 # String, String > Null
 def svnDownloader(src, dst):
     fileName = src.split("/")[-1]
     print ("SVN Downloading \"" + fileName + "\"...")
     os.system("SVN export " + src + " " + dst)
-=======
-# STRING, STRING > NULL
-def svnDownloader(urlToDownload, projLocation):
-    fileName = urlToDownload.split("/")[-1]
-    print ("-"*40)
-    print ("SVN Downloading \"" + fileName + "\"...")
-    os.system("svn export " + urlToDownload + " " + projLocation)
->>>>>>> 162e70a997335a384851c8b113c8d2c79ad2e887
-    print ("SVN Successfully Downloaded: " + fileName)
-    print ("-" * 40)
 
 def downloadFiles(dList, dst):
     # Easygui multichoice box
