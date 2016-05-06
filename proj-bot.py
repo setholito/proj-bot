@@ -3,12 +3,11 @@
 '''
 ##############
 
-PROJ-BOT 1.0.1
+PROJ-BOT 1.0.2
 
 ##############
 '''
 
-from easygui import *
 import os
 import shutil
 import sys
@@ -17,16 +16,14 @@ import urllib
 
 # LIST VARIABLES =========================================
 
-# Individual files for download
 psdUrlList = [
             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-template.psd",
             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-content.psd",
             "https://github.com/livingdirectcreative/psd-templates/raw/master/email/featured-banner-sale.psd",
-            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/skinny-banner-template.psd"
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/skinny-banner-template.psd",
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/mosaic-1.psd",
+            "https://github.com/livingdirectcreative/psd-templates/raw/master/email/mosaic-2.psd"
             ]
-
-# Directory URL for download
-assetsUrlList = []
 
 # CREATE PROJECT =========================================
 
@@ -37,11 +34,11 @@ def initProj():
     
     # Easygui text box
     dateString = time.strftime("%Y%m%d-")
-    projFolderName = enterbox("Enter Name of Project", "Proj-Bot: Name Your Project", dateString)
-    print ("PROJECT NAME: " + projFolderName)
+    projFolderName = raw_input("\nWhat would you like to name your project? ")
+    print ("\nPROJECT NAME: " + projFolderName)
 
     # Path location & folder creation
-    fullProjPath = projStorage + projFolderName
+    fullProjPath = projStorage + dateString + projFolderName
 
     return fullProjPath
 
@@ -53,12 +50,12 @@ def createDirectories(dirPath):
     projFolderList = ['_resources','_working','deliverables']
 
     # Create project folder
-    print "Your folder has been created at: " + dirPath
-    os.mkdir( dirPath );
+    os.mkdir(dirPath);
 
+    print ("-" * 40)
     # Loop through folder list
     for projFolder in projFolderList:
-       os.mkdir( dirPath + "/" + projFolder );
+       os.mkdir(dirPath + "/" + projFolder);
        print 'Folder Added: ' + projFolder
     print ("-" * 40)
 
@@ -69,39 +66,35 @@ def genericDownloader(src, dst):
     fileName = src.split("/")[-1]
     print ("Downloading \"" + fileName + "\"...")
     urllib.urlretrieve(src, dst + fileName)
+    print ("Successfully Downloaded \"" + fileName + "\"!")
 
 # String, String > Null
 def svnDownloader(src, dst):
-    fileName = src.split("/")[-1]
-    print ("SVN Downloading \"" + fileName + "\"...")
+    dirName = src.split("/")[-1]
+    print ("SVN Downloading \"" + dirName + "\"...")
     os.system("SVN export " + src + " " + dst)
+    print ("Successfully Downloaded \"" + dirName + "\"!")
 
-def downloadFiles(dList, dst):
-    # Easygui multichoice box
-    dialogTitle = "Proj Bot: File Picker"
-    dialogMsg = "Choose one or multiple files. Go for it!"
+# List, String > Null
+def downloadChosenFiles(downloadList, destination):
 
-    # List of modified/pretty file names
-    displayChoices = []
+    # Display choices to the user
+    printFileNames(downloadList)
 
-    # Int used to number files
-    itemNum = 1
+    # String gets turned into a list if response is formatted correctly
+    userNumbers = raw_input("Use numbers separated by commas to choose files: ").split(",")
 
-    # Loop through URLs in download list
-    for url in dList:
-        # Make it pretty
-        displayChoices.append(url.split("/")[-1])
-        itemNum += 1
+    # List to store URLS
+    chosenList = []
 
-    # List of selected files
-    selectedFiles = multchoicebox(dialogMsg, dialogTitle, displayChoices)
-    print ("Selected Files: " + str(selectedFiles))
+    # Loop over the userNumbers list, and append the correlating URL to chosenList
+    for idx in userNumbers:
+        intIdx = int(idx) -1 
+        chosenList.append(downloadList[intIdx])
 
-    # Loop through list of selected files 
-    # Download'em using the genericDownloader function
-    for sFile in selectedFiles:
-        sIndex = displayChoices.index(sFile)
-        genericDownloader(dList[sIndex], dst)
+    # Loop through chosenList and call genericDownloader to pull assets down
+    for downloadItem in chosenList:
+        genericDownloader(downloadItem, destination)
 
 # RENAMER =========================================
 
@@ -109,13 +102,21 @@ def downloadFiles(dList, dst):
 def renameFile(oName, nName):
     os.rename(oName, nName)
 
+# PRINT NAMES =========================================
+
+def printFileNames(assetList):
+    incNum = 1
+    for asset in assetList:
+        print str(incNum) + ". " + asset.split("/")[-1]
+        incNum += 1
+
 # GENERATE PROJECT =========================================
 
 # Null > Null
 def generateProj():
     # Initialize project 
     projPath = initProj()
-    print "PROJECT PATH: ", projPath
+    print "PROJECT PATH: " + projPath
 
     # Create list of directories
     createDirectories(projPath)
@@ -125,17 +126,23 @@ def generateProj():
 
     # Pass in list of selected files to download
     # Add to desired location
-    downloadFiles(psdUrlList, resourcePath)
+    downloadEmailPSDs = raw_input("Would you like to download some email PSDs? (y/n): ").lower()
+
+    if downloadEmailPSDs == "y":
+        downloadChosenFiles(psdUrlList, resourcePath)
+
+    print ("-" * 40)
 
     # Returns True or False
-    addAnotherProj = ynbox("Add another project?", "Proj Bot: Another Project")
-    while addAnotherProj == True:
-        print ("==== ### ADDING NEW PROJECT ### ====")
+    addAnotherProj = raw_input("Add another project? (y/n): ").lower()
+
+    while addAnotherProj == "y":
+        print ("\n====== NEW PROJECT ======\n")
         # Run generateProj function again
         generateProj()
-        # Reset addAnotherProj
+        # Empty the variable
         addAnotherProj = ""
 
 generateProj()
 
-print ("<<< DONE! >>>")
+print ("\n<<< DONE! >>>\n")
