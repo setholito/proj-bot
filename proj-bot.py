@@ -30,9 +30,9 @@ psdUrlList = [
 # Null > String
 def initProj():
     # Project hub
-    projStorage =  "/Users/sdavis/Documents/_jira-tasks/"
+    projStorage = "/Users/sdavis/Documents/_jira-tasks/"
     
-    # Easygui text box
+    # Prepend date to beginning of directory name
     dateString = time.strftime("%Y%m%d-")
     projFolderName = raw_input("\nWhat would you like to name your project? ")
     print ("\nPROJECT NAME: " + projFolderName)
