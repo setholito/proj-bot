@@ -1,4 +1,4 @@
-# ProjBot
+# Proj-Bot
 
 A Python script to speed up my workflow. As a designer, I don't want to be wasting time setting up directories.
 
